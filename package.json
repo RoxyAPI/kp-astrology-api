@@ -1,0 +1,15 @@
+{
+  "name": "kp-astrology-api",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "description": "KP astrology API. Cuspal sub lord and sub sub lord precision for KP practitioners.",
+  "license": "MIT",
+  "dependencies": {
+    "@roxyapi/sdk": "^1.2.21"
+  },
+  "scripts": {
+    "ts": "bun example.ts",
+    "js": "node example.js"
+  }
+}
