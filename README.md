@@ -1,4 +1,4 @@
-![KP Astrology API](banner.png)
+[![KP Astrology API](banner.png)](https://roxyapi.com/products/vedic-astrology-api)
 
 # KP Astrology API
 
