@@ -23,7 +23,7 @@ KP astrology (Krishnamurti Paddhati) demands sub lord and sub-sub lord precision
 | MCP server | `https://roxyapi.com/mcp/vedic-astrology` (Streamable HTTP, no local setup) |
 | SDKs | TypeScript on npm `@roxyapi/sdk`, Python on PyPI `roxy-sdk` |
 | Pricing | One key, flat per call, $39 for 25K calls |
-| Licensing | No AGPL or GPL entanglement |
+| Licensing | Personal and commercial use, including closed source apps. No AGPL or GPL entanglement. [Full terms](https://roxyapi.com/policy/license) |
 | Last verified | 2026-Q2 |
 
 ## Quick start
@@ -264,7 +264,7 @@ This repo ships an [AGENTS.md](AGENTS.md) execution playbook. Cursor, Claude Cod
 
 MIT for this sample repo. See [LICENSE](LICENSE).
 
-**Catalog licensing:** Personal and Commercial Use. No AGPL or GPL entanglement. Full posture at [roxyapi.com/policy/license](https://roxyapi.com/policy/license).
+**Catalog licensing:** Personal and commercial use, including closed source proprietary apps. No AGPL or GPL entanglement. RoxyAPI APIs and SDKs are safe to embed in commercial products. Full terms at [roxyapi.com/policy/license](https://roxyapi.com/policy/license).
 
 ## Contact
 
