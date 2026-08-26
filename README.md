@@ -2,7 +2,7 @@
 
 # KP Astrology API
 
-> Sub lord and sub-sub lord precision for KP practitioners. One key covers 12+ spiritual domains. MCP-first, verified against NASA JPL Horizons.
+> Sub lord and sub-sub lord precision for KP practitioners. One key covers 14+ spiritual domains. MCP-first, verified against NASA JPL Horizons.
 
 [![Get API Key](https://img.shields.io/badge/Get_API_Key-RoxyAPI-14b8a6?style=for-the-badge&logo=key&logoColor=white)](https://roxyapi.com/pricing)
 [![Try Live](https://img.shields.io/badge/Try_API_Live-Free_in_browser-22c55e?style=for-the-badge&logo=swagger&logoColor=white)](https://roxyapi.com/api-reference)
@@ -12,13 +12,13 @@
 
 ## What is KP Astrology API
 
-KP astrology (Krishnamurti Paddhati) demands sub lord and sub-sub lord precision that generic Vedic APIs do not provide. This repo ships working TypeScript, JavaScript, and Python samples against the RoxyAPI KP chart endpoint. One subscription unlocks 12+ spiritual domains: Western astrology, Vedic astrology, numerology, tarot, Human Design, Forecast, biorhythm, I Ching, crystals, dreams, angel numbers, and location. All positions are computed by Roxy Ephemeris, verified against NASA JPL Horizons.
+KP astrology (Krishnamurti Paddhati) demands sub lord and sub-sub lord precision that generic Vedic APIs do not provide. This repo ships working TypeScript, JavaScript, and Python samples against the RoxyAPI KP chart endpoint. One subscription unlocks 14+ spiritual domains: Western astrology, Vedic astrology, Forecast, Human Design, Chinese astrology, Feng Shui, numerology, tarot, biorhythm, I Ching, crystals, dreams, angel numbers, and location. All positions are computed by Roxy Ephemeris, verified against NASA JPL Horizons.
 
 ## Why this API
 
 | Property | Value |
 |----------|-------|
-| Coverage | 12+ spiritual domains in one subscription |
+| Coverage | 14+ spiritual domains in one subscription |
 | Calculation | Roxy Ephemeris, verified against NASA JPL Horizons |
 | MCP server | `https://roxyapi.com/mcp/vedic-astrology` (Streamable HTTP, no local setup) |
 | SDKs | TypeScript on npm `@roxyapi/sdk`, Python on PyPI `roxy-sdk`, PHP on Packagist `roxyapi/sdk`, C# on NuGet `RoxyApi.Sdk`, Go `github.com/RoxyAPI/sdk-go`, WordPress plugin `roxyapi` |
