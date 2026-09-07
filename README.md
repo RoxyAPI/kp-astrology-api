@@ -216,6 +216,64 @@ console.log(data.significators.houseWise);    // house-wise significator table
 | Compare sub lords across all 12 cusps | Iterate `cusps[].subLord` from the chart response |
 | Build a KP significator table UI | Combine `significators.houseWise` and `significators.planetWise` |
 
+## Daily KP flow in four requests
+
+`daily-flow.ts` reads one day for one chart. It geocodes the birth city, makes four calls, and prints each layer of the reading on its own.
+
+```bash
+bun install
+cp .env.example .env    # then add your key
+bun run daily
+```
+
+| Request | Operation ID | What the sample prints from it |
+|---------|--------------|-------------------------------|
+| `POST /vedic-astrology/kp/chart` | `generateKpChart` | Sign, star and sub lord of the tracked cusps, then the four-level significator table for those houses |
+| `POST /vedic-astrology/dasha/current` with `significators: true` | `getCurrentDasha` | The five running lords, the houses each signifies at L1 to L4, its KP strength grade, and the houses every level converges on |
+| `POST /vedic-astrology/kp/ruling-planets` with `birthDate` and `birthTime` | `getKpRulingPlanets` | Ruling planets for the moment and the houses each of them signifies in this chart |
+| `POST /vedic-astrology/kp/sublord-changes` with `planet: "Moon"` | `getKpSublordChanges` | Moon sub lord windows across the day with their exact boundary times |
+
+Four details are worth copying:
+
+- The cusps and the four-level significator table arrive in the same `kp/chart` response, so that is one request and not three.
+- `significators: true` attaches each running lord star lord, sub lord, L1 to L4 houses and strength grade to `dasha/current`, so the periods and the houses they signify are one request.
+- `birthDate` plus `birthTime` on `kp/ruling-planets` add the overlap check: which houses each ruling planet signifies in the natal chart.
+- `startDate` and `endDate` on `kp/sublord-changes` are calendar days in the `timezone` you pass, so one local day is the same date in both, and every boundary comes back with its time in that timezone.
+
+`weighDay()` at the top of the script is the one place a verdict would be computed, and it computes none. It joins the layers per house and prints them side by side. Which houses count as positive, whether a fast dasha level outranks a slow one, and what a ruling planet overlap is worth are all school choices, so the weighting stays yours.
+
+### Render the four responses
+
+Components are stateless. Fetch with the SDK, set `.data`, and the component renders. No build step needed.
+
+```html
+<script
+  src="https://cdn.jsdelivr.net/npm/@roxyapi/ui@latest/dist/cdn/roxy-ui.js"
+  crossorigin="anonymous"
+  defer
+></script>
+
+<roxy-kp-chart id="chart"></roxy-kp-chart>
+<roxy-dasha-timeline id="dasha"></roxy-dasha-timeline>
+<roxy-kp-ruling-planets id="ruling"></roxy-kp-ruling-planets>
+
+<script type="module">
+  // chart, dasha and ruling are the three responses daily-flow.ts already fetched
+  document.getElementById('chart').data = chart;
+  document.getElementById('dasha').data = dasha;
+  document.getElementById('ruling').data = ruling;
+</script>
+```
+
+| Response | Component |
+|----------|-----------|
+| `generateKpChart` | `<roxy-kp-chart>` Ascendant, Placidus cusps, and planets and nodes in tabbed stellar-hierarchy tables |
+| `getCurrentDasha` | `<roxy-dasha-timeline>` the Vimshottari ladder, mahadasha through prana, active period highlighted |
+| `getKpRulingPlanets` | `<roxy-kp-ruling-planets>` day lord, Moon and Lagna stellar hierarchies, and the house significators |
+| `getKpSublordChanges` | No dedicated component. The windows are a flat list, printed as a table by section 5 of the script |
+
+npm, React and Vue wrappers, the shadcn registry, and the theming tokens are all at [roxyapi.com/docs/ui](https://roxyapi.com/docs/ui).
+
 ## Related endpoints in this domain
 
 - `POST /vedic-astrology/kp/planets` (`getKpPlanets`) - planet-level sub lord and sub-sub lord table without full cusp data

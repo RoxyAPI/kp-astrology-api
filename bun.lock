@@ -5,11 +5,11 @@
     "": {
       "name": "kp-astrology-api",
       "dependencies": {
-        "@roxyapi/sdk": "^1.2.21",
+        "@roxyapi/sdk": "^1.2.45",
       },
     },
   },
   "packages": {
-    "@roxyapi/sdk": ["@roxyapi/sdk@1.2.21", "", {}, "sha512-CgcGCkSJ36J30lQWQkLun9QECoUPhFvQG4YStS6+DbLb19C+XSkWbl19xarW+W+mTLFsYONaYSqPjXx2Fl8IYQ=="],
+    "@roxyapi/sdk": ["@roxyapi/sdk@1.2.76", "", {}, "sha512-HvWYlVs6cH/b1yrlPklZLLyPCEGAMlQvbDzF+8SRq+xbW8K5dpcWvq5yS2jCNQvL8L2Ix3PoyxgbWuLpe8KoGw=="],
   }
 }

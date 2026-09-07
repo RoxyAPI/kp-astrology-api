@@ -10,6 +10,7 @@
   },
   "scripts": {
     "ts": "bun example.ts",
-    "js": "node example.js"
+    "js": "node example.js",
+    "daily": "bun daily-flow.ts"
   }
 }

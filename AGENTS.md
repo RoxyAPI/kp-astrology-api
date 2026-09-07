@@ -77,6 +77,19 @@ const { data: chart } = await roxy.vedicAstrology.generateKpChart({
 - `kpNumber` (1-249) maps the degree to the Vimshottari sub-period catalog. It is the index used by KP ruling planet tables.
 - For horary KP ("will X happen"), use `POST /vedic-astrology/kp/ruling-planets` with current latitude and longitude, not this endpoint.
 
+## Daily KP flow (four requests)
+`daily-flow.ts` in this repo reads one day for one chart. Copy the order, not only the calls.
+
+1. `POST /vedic-astrology/kp/chart` (`generateKpChart`): the cusps of the houses being read, plus `significators.houseWise` for the four-level table. One request, not three.
+2. `POST /vedic-astrology/dasha/current` (`getCurrentDasha`) with `"significators": true`: the five running lords, each with `significators.signifies.L1` through `L4`, `signifiedHouses`, `strength.grade`, plus `commonHouses` for the levels that converge.
+3. `POST /vedic-astrology/kp/ruling-planets` (`getKpRulingPlanets`) with `datetime`, `birthDate` and `birthTime`: `rulingPlanets[]` ordered strongest first, and `significators[].signifies`, which is present only when the birth data is sent.
+4. `POST /vedic-astrology/kp/sublord-changes` (`getKpSublordChanges`) with `"planet": "Moon"`: `changes[]` carries `time`, `fromSublord`, `toSublord`, `fromKp`, `toKp`. Each change is a boundary, so a window runs from one change to the next.
+
+- Send `"ayanamsa": "kp-newcomb"` on the dasha call. It defaults to `lahiri` there while the KP chart defaults to `kp-newcomb`, and one reading wants one ayanamsa.
+- `startDate` and `endDate` on sublord-changes are calendar days in the `timezone` you pass. For one local day send the same date in both; every boundary comes back with its time in that timezone.
+- Do not synthesize a verdict unless the user defines the weighting. KP schools disagree on which houses are positive and on how the five levels rank, so the API returns the layers and the reader supplies the model.
+- Render with `<roxy-kp-chart>`, `<roxy-dasha-timeline>` and `<roxy-kp-ruling-planets>` from `@roxyapi/ui`. The components are stateless: set `.data` to the SDK response.
+
 ## Related endpoints
 - `POST /vedic-astrology/kp/planets` (`getKpPlanets`): planet-only sub lord table, lighter payload
 - `POST /vedic-astrology/kp/ruling-planets` (`getKpRulingPlanets`): real-time horary ruling planets
