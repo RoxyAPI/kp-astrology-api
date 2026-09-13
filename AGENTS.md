@@ -77,13 +77,14 @@ const { data: chart } = await roxy.vedicAstrology.generateKpChart({
 - `kpNumber` (1-249) maps the degree to the Vimshottari sub-period catalog. It is the index used by KP ruling planet tables.
 - For horary KP ("will X happen"), use `POST /vedic-astrology/kp/ruling-planets` with current latitude and longitude, not this endpoint.
 
-## Daily KP flow (four requests)
+## Daily KP flow (five requests)
 `daily-flow.ts` in this repo reads one day for one chart. Copy the order, not only the calls.
 
 1. `POST /vedic-astrology/kp/chart` (`generateKpChart`): the cusps of the houses being read, plus `significators.houseWise` for the four-level table. One request, not three.
-2. `POST /vedic-astrology/dasha/current` (`getCurrentDasha`) with `"significators": true`: the five running lords, each with `significators.signifies.L1` through `L4`, `signifiedHouses`, `strength.grade`, plus `commonHouses` for the levels that converge.
+2. `POST /vedic-astrology/dasha/current` (`getCurrentDasha`) with `"datetime"` (the instant to read, default now) and `"significators": true`: the five running lords at that instant, each with `significators.signifies.L1` through `L4`, `signifiedHouses`, `strength.grade`, plus `commonHouses` for the levels that converge.
 3. `POST /vedic-astrology/kp/ruling-planets` (`getKpRulingPlanets`) with `datetime`, `birthDate` and `birthTime`: `rulingPlanets[]` ordered strongest first, and `significators[].signifies`, which is present only when the birth data is sent.
 4. `POST /vedic-astrology/kp/sublord-changes` (`getKpSublordChanges`) with `"planet": "Moon"`: `changes[]` carries `time`, `fromSublord`, `toSublord`, `fromKp`, `toKp`. Each change is a boundary, so a window runs from one change to the next.
+5. `POST /vedic-astrology/daily` (`getVedicDailyReading`): `verdict`, `score` and `areas.finance.band` for the day, plus `areas.finance.composite`, an equal weight of the day score, the finance score and a natal count, with the three as `layers[]` beside it. `null` above the KP polar latitude and when the running lords reach none of the six finance houses.
 
 - Send `"ayanamsa": "kp-newcomb"` on the dasha call. It defaults to `lahiri` there while the KP chart defaults to `kp-newcomb`, and one reading wants one ayanamsa.
 - `startDate` and `endDate` on sublord-changes are calendar days in the `timezone` you pass. For one local day send the same date in both; every boundary comes back with its time in that timezone.

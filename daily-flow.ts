@@ -67,6 +67,8 @@ async function main() {
   const { latitude, longitude, timezone } = loc.cities[0];
 
   const day = localDate(timezone);
+  /** The instant the dasha lords and the ruling planets are read at: this wall-clock moment on the day. */
+  const moment = `${day}T${localTime(timezone)}`;
 
   console.log(`KP daily flow for ${BIRTH.date} ${BIRTH.time}, ${BIRTH.city}`);
   console.log(`Day read: ${day} (${timezone})`);
@@ -105,9 +107,11 @@ async function main() {
     }
   }
 
-  // Request 2: the five running lords. significators: true attaches each lord star
-  // lord, sub lord, L1 to L4 houses and KP strength grade, so the running periods
-  // and their signified houses are also one request.
+  // Request 2: the five running lords at the moment. datetime pins the instant, so a
+  // reading prepared for another day gets that day sookshma and prana rather than
+  // today. significators: true attaches each lord star lord, sub lord, L1 to L4
+  // houses and KP strength grade, so the running periods and their signified
+  // houses are also one request.
   const { data: dasha, error: dashaErr } = await roxy.vedicAstrology.getCurrentDasha({
     body: {
       date: BIRTH.date,
@@ -118,6 +122,7 @@ async function main() {
       // Match the chart. Dasha dates default to Lahiri, and a KP reading wants both
       // halves on the same ayanamsa.
       ayanamsa: 'kp-newcomb',
+      datetime: moment,
       significators: true,
     },
   });
@@ -149,9 +154,8 @@ async function main() {
       `Maha plus Antar plus Pratyantar: [${common?.dashaBhuktiAntara.join(' ') || '-'}]`,
   );
 
-  // Request 3: ruling planets for the moment. birthDate and birthTime are what make
-  // the response carry which houses each ruling planet signifies IN THIS CHART.
-  const moment = `${day}T${localTime(timezone)}`;
+  // Request 3: ruling planets for the same moment. birthDate and birthTime are what
+  // make the response carry which houses each ruling planet signifies IN THIS CHART.
   const { data: rp, error: rpErr } = await roxy.vedicAstrology.getKpRulingPlanets({
     body: {
       latitude,
@@ -194,6 +198,30 @@ async function main() {
     );
   });
 
+  // Request 5: the composed daily reading for the same native and day. It reads
+  // panchanga, gochara, dasha and Ashtakavarga into one verdict, then layers the
+  // day score, the finance score and a natal count into one finance composite.
+  const { data: reading, error: readingErr } = await roxy.vedicAstrology.getVedicDailyReading({
+    body: { birthDate: BIRTH.date, birthTime: BIRTH.time, latitude, longitude, timezone, date: day },
+  });
+  if (readingErr) throw new Error(readingErr.error);
+
+  console.log(`\n6. Daily reading for ${day}`);
+  console.log(
+    `  verdict: ${reading.verdict}   score: ${reading.score}   finance band: ${reading.areas.finance.band}`,
+  );
+  // composite is null above the KP polar latitude and when the running lords
+  // reach none of the six finance houses. Both are ABSENCE, not a weak verdict.
+  const composite = reading.areas.finance.composite;
+  if (composite) {
+    console.log(`  composite: ${composite.band} (${composite.score})`);
+    for (const layer of composite.layers) {
+      console.log(`    ${layer.layer.padEnd(8)}${layer.band.padEnd(10)}${layer.score}`);
+    }
+  } else {
+    console.log('  composite: none (no six-house connection, or above the KP polar latitude)');
+  }
+
   // Everything above is API output. Everything below is yours.
   const layers: HouseLayers[] = HOUSES.map((house) => ({
     house,
@@ -206,7 +234,7 @@ async function main() {
     ),
   }));
 
-  console.log('\n6. The four layers per house, joined and not weighted');
+  console.log('\n7. The four layers per house, joined and not weighted');
   for (const line of weighDay(layers)) console.log(line);
 }
 

@@ -216,9 +216,9 @@ console.log(data.significators.houseWise);    // house-wise significator table
 | Compare sub lords across all 12 cusps | Iterate `cusps[].subLord` from the chart response |
 | Build a KP significator table UI | Combine `significators.houseWise` and `significators.planetWise` |
 
-## Daily KP flow in four requests
+## Daily KP flow in five requests
 
-`daily-flow.ts` reads one day for one chart. It geocodes the birth city, makes four calls, and prints each layer of the reading on its own.
+`daily-flow.ts` reads one day for one chart. It geocodes the birth city, makes five calls, and prints each layer of the reading on its own.
 
 ```bash
 bun install
@@ -229,20 +229,21 @@ bun run daily
 | Request | Operation ID | What the sample prints from it |
 |---------|--------------|-------------------------------|
 | `POST /vedic-astrology/kp/chart` | `generateKpChart` | Sign, star and sub lord of the tracked cusps, then the four-level significator table for those houses |
-| `POST /vedic-astrology/dasha/current` with `significators: true` | `getCurrentDasha` | The five running lords, the houses each signifies at L1 to L4, its KP strength grade, and the houses every level converges on |
+| `POST /vedic-astrology/dasha/current` with `datetime` and `significators: true` | `getCurrentDasha` | The five running lords at that instant, the houses each signifies at L1 to L4, its KP strength grade, and the houses every level converges on |
 | `POST /vedic-astrology/kp/ruling-planets` with `birthDate` and `birthTime` | `getKpRulingPlanets` | Ruling planets for the moment and the houses each of them signifies in this chart |
 | `POST /vedic-astrology/kp/sublord-changes` with `planet: "Moon"` | `getKpSublordChanges` | Moon sub lord windows across the day with their exact boundary times |
+| `POST /vedic-astrology/daily` | `getVedicDailyReading` | Verdict, score and finance band for the day, plus the finance composite band and its day, finance and natal layers |
 
 Four details are worth copying:
 
 - The cusps and the four-level significator table arrive in the same `kp/chart` response, so that is one request and not three.
-- `significators: true` attaches each running lord star lord, sub lord, L1 to L4 houses and strength grade to `dasha/current`, so the periods and the houses they signify are one request.
+- `datetime` on `dasha/current` pins the instant the five lords are read at, so a reading prepared for another day carries that day sookshma and prana; omit it and the call reads now. `significators: true` attaches each running lord star lord, sub lord, L1 to L4 houses and strength grade, so the periods and the houses they signify are one request.
 - `birthDate` plus `birthTime` on `kp/ruling-planets` add the overlap check: which houses each ruling planet signifies in the natal chart.
 - `startDate` and `endDate` on `kp/sublord-changes` are calendar days in the `timezone` you pass, so one local day is the same date in both, and every boundary comes back with its time in that timezone.
 
 `weighDay()` at the top of the script is the one place a verdict would be computed, and it computes none. It joins the layers per house and prints them side by side. Which houses count as positive, whether a fast dasha level outranks a slow one, and what a ruling planet overlap is worth are all school choices, so the weighting stays yours.
 
-### Render the four responses
+### Render the five responses
 
 Components are stateless. Fetch with the SDK, set `.data`, and the component renders. No build step needed.
 
@@ -271,6 +272,7 @@ Components are stateless. Fetch with the SDK, set `.data`, and the component ren
 | `getCurrentDasha` | `<roxy-dasha-timeline>` the Vimshottari ladder, mahadasha through prana, active period highlighted |
 | `getKpRulingPlanets` | `<roxy-kp-ruling-planets>` day lord, Moon and Lagna stellar hierarchies, and the house significators |
 | `getKpSublordChanges` | No dedicated component. The windows are a flat list, printed as a table by section 5 of the script |
+| `getVedicDailyReading` | `<roxy-vedic-daily>` the composed daily reading: panchanga, gochara, dasha and the finance area for the day |
 
 npm, React and Vue wrappers, the shadcn registry, and the theming tokens are all at [roxyapi.com/docs/ui](https://roxyapi.com/docs/ui).
 
